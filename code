@@ -1,0 +1,127 @@
+import turtle
+import random
+import math
+from time import sleep
+
+
+
+wn = turtle.Screen()
+wn.bgcolor("burlywood4")
+wn.screensize()
+wn.tracer(1)
+
+mypen = turtle.Turtle()
+mypen.penup()
+mypen.pencolor("white")
+mypen.setposition(-500,-500)
+mypen.pendown()
+mypen.pensize(3)
+for side in range(4):
+    mypen.speed(50)
+    mypen.forward(1000)
+    mypen.left(90)
+mypen.hideturtle()
+
+maxgoals = 3
+goals = []
+for count in range(maxgoals):
+    goals.append(turtle.Turtle())
+    goals[count].color("goldenrod")
+    goals[count].shape("triangle")
+    goals[count].penup()
+    goals[count].speed(100)
+    goals[count].left(-90)
+    goals[count].setposition(random.randint(-480,480),random.randint(470,490))
+
+
+
+player = turtle.Turtle()
+player.color("ivory4")
+player.shape("square")
+player.penup()
+player.speed(0)
+player.shapesize(6)
+player.setposition(0,-440)
+
+speed = 10
+
+
+score = 0
+
+lives = 3
+lives_pen = turtle.Turtle()
+lives_pen.penup()
+lives_pen.hideturtle()
+lives_pen.color("white")
+lives_pen.setposition(435, 480)
+livesstring = "Lives %s" % lives
+lives_pen.write(livesstring, False, align="left", font=("arial", 14, "normal"))
+
+
+
+def moveright():
+    x = player.xcor()
+    if x < 430:
+        player.setx(x + 20)
+
+
+def moveleft():
+    x = player.xcor()
+    if x > -430:
+        player.setx(x - 20)
+
+
+def isCollision(t1, t2):
+    d = math.sqrt(math.pow(t1.xcor() - t2.xcor(),2) + math.pow(t1.ycor()-t2.ycor(),2))
+    if d < 70:
+        return True
+    else:
+        return False
+maxspeed = 9
+x=0
+while x == 0:
+
+    turtle.onkeypress(moveright,"Right")
+    turtle.onkeypress(moveleft,"Left")
+    turtle.listen()
+
+    for count in range(maxgoals):
+        goals[count].forward(random.randint(1,maxspeed))
+        if maxspeed % 10 == 0:
+            maxspeed = maxspeed + 1
+        if isCollision(player, goals[count]):
+            if score % 10 == 0:
+                maxgoals += 1
+                goals.append(turtle.Turtle())
+                goals[-1].color("goldenrod")
+                goals[-1].shape("triangle")
+                goals[-1].penup()
+                goals[-1].speed(100)
+                goals[-1].left(-90)
+                goals[-1].setposition(random.randint(-480,480),random.randint(470,490))
+            goals[count].setposition(random.randint(-480,480),random.randint(470,490))
+            if goals[count].xcor() > 500 or player.xcor() <-500:
+                player.right(180)
+            score += 1
+            mypen.undo()
+            mypen.penup()
+            mypen.hideturtle()
+            mypen.setposition(-450,480)
+            scorestring = "Score %s" %score
+            mypen.write(scorestring,False,align="left",font=("arial",14,"normal"))
+
+        if goals[count].ycor() > 500 or goals[count].ycor() <-500:
+            goals[count].setposition(random.randint(-480,480),random.randint(470,490))
+            lives = lives - 1
+            lives_pen.undo()
+            lives_pen.penup()
+            lives_pen.hideturtle()
+            lives_pen.setposition(435,480)
+            livesstring = "Lives %s" %lives
+            lives_pen.write(livesstring,False,align="left",font=("arial",14,"normal"))
+        if lives <= 0:
+            mypen.penup()
+            mypen.setposition(-50,0)
+            gamestring = "GAME OVER"
+            mypen.write(gamestring,False,align="left",font=("arial",25,"normal"))
+            sleep(90)
